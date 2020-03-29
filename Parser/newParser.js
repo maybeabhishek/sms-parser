@@ -24,7 +24,7 @@ UserBill = require('./userBill')
 
 var startTime = new Date().getTime();
 var Billers = [];
-Parser.parse = async function () {
+Parser.parse = async function (sms) {
 
     MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"), function (err, client) {
         var db = client.db("qykly_dev")
@@ -46,12 +46,13 @@ Parser.parse = async function () {
 
                                 var start = Date.now();
                                 var dirs = [];
-                                smsList = [{
-                                    "customer_id": 325170533,
-                                    "sender": "BZ-SBIINB",
-                                    "sender_timestamp": "2017-01-02 14:26:09",
-                                    "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
-                                }]
+                                // smsList = [{
+                                //     "customer_id": 325170533,
+                                //     "sender": "BZ-SBIINB",
+                                //     "sender_timestamp": "2017-01-02 14:26:09",
+                                //     "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
+                                // }]
+                                smsList = [sms]
                                 processSms(smsList.filter(function (sms) {
                                     return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
                                 }), db, _.groupBy(templates, function (temp) {
@@ -65,7 +66,7 @@ Parser.parse = async function () {
                 });
             }
         });
-        console.log("asdasdasdas")
+        // console.log("asdasdasdas")
     });
 
 }

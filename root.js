@@ -6,22 +6,18 @@ router.get("/", function (req, res) {
 	res.render("index.ejs");
 })
 
-router.post("/parse",async function(req, res){
+router.post("/parse", function(req, res){
     var sms = {
         "customer_id": req.body.custID,
         "sender": req.body.sender,
         "sender_timestamp": req.body.date,
         "sender_message": req.body.message
       }
+    Parser.parse(sms)
+    setTimeout(function(){res.send(Parser)},2000);
     
-  
-      await Parser.parse()
-      console.log(Parser)
-    
-    
-    
-    
-    res.send("Complete")
+    // res.send("Complete")
+
 })  
 
 module.exports = router;
