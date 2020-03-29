@@ -6,13 +6,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMS Parse</title>
     <link rel="stylesheet" type="text/css" href="dist/semantic.min.css">
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
-        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <script src="dist/semantic.min.js"></script>
+    
 </head>
 
 <body>
-    Hello
+    <div class="ui padded  container">
+        <br><br><br>
+        <div class="ui raised padded text container">
+            <h1 class="ui center aligned header">SMS Parser</h1>
+        </div>
+        <div class="ui padded raised segment">
+            <div class="ui message padded" style="padding:15px; margin:2px">
+                <h4 class="ui dividing header blue">Message Details</h4>
+                <form class="ui small form"  action="/parse" method="post" style="padding:5px; margin:2px;">
+                    <div class="three fields">
+
+                        <div class="three wide required field">
+                            <label>Customer ID</label>
+                            <input type="text" name ="custID"  placeholder="Eg: 123456789" value="123456789">
+                        </div>
+                        <div class="three wide required field">
+                            <label>Sender</label>
+                            <input type="text"  name ="sender" placeholder="SBI or HDFC etc" value="">
+                        </div>
+                        <div class=" three wide required field">
+                            <label>Date</label>
+                            <input type="text"  name ="date" placeholder="Variable Value" value="2020-01-02 14:26:09">
+                        </div>
+                    </div>
+
+                    <div class="eight wide required field" style="padding:2px; margin:2px;width:600px">
+                        <label>Message</label>
+                        <textarea rows="2" name ="message" ></textarea>
+                    </div>
+
+                    <div class="extra content" style="padding:4px">
+                        <button class="ui button black" id='AddVarStep' type ="submit">Parse</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="dist/semantic.min.js"></script>
+
 </body>
 
 </html>
