@@ -213,6 +213,17 @@ MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"), fun
                             // });
                             var start = Date.now();
                             var dirs = [];
+                            smsList = [{
+                                "customer_id": 325170533,
+                                "sender": "BZ-SBIINB",
+                                "sender_timestamp": "2017-01-02 14:26:09",
+                                "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
+                              }]
+                            processSms(smsList.filter(function(sms) {
+                                return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
+                            }), db, _.groupBy(templates, function(temp) {
+                                return temp.address;
+                            }), 0)
 
                             // ====================================       OG           ==========================================
                             // fs.readdirSync('JSON_Files').forEach(function(dir) {
@@ -514,7 +525,7 @@ var processSms = function(smsList, qyklyDb, templates, index) {
                                     var time = end - start;
                                     userTransaction.parsingTime = time;
                                     qyklyDb.collection('ProcessedData-user-transactions').insert(userTransaction);
-
+                                    console.log(userTransaction)
 
                                 } catch (e) {
                                     qyklyDb.collection('unparsedSmsWithError').insert(message);
