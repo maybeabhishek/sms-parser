@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 // Connect Database
 // =================
 console.log("Connecting to database...");
-mongoose.connect('mongodb://localhost/qykly_dev'); 
+mongoose.connect('mongodb://localhost:27017'); 
 console.log("Connected to database!");
 
 

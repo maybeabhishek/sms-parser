@@ -27,10 +27,9 @@ var Billers = [];
 Parser.parse = async function (sms) {
 
     MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"), function (err, client) {
-        var db = client.db("qykly_dev")
+        var db = client.db("qykly_dev");
         assert.equal(null, err);
         assert.ok(db != null);
-        console.log("started");
 
         db.collection('regexes').find({}).toArray(function (err, templates) {
             console.log(err);
