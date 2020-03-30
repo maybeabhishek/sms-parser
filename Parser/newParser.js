@@ -25,7 +25,6 @@ UserBill = require('./userBill')
 var startTime = new Date().getTime();
 var Billers = [];
 Parser.parse = async function (sms) {
-
     MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"), function (err, client) {
         var db = client.db("qykly_dev");
         assert.equal(null, err);
