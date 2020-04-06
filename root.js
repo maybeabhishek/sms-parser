@@ -13,7 +13,7 @@ router.post("/parse", function(req, res){
         "sender_timestamp": req.body.date,
         "sender_message": req.body.message
       }
-    Parser.parse(sms).then(r => console.log(r));
+    Parser.parse(sms).then(r => console.log("In root"+r));
     
     setTimeout(function(){res.send(Parser)},2000);
     // console.log(r);

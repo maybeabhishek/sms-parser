@@ -25,7 +25,7 @@ UserBill = require('./userBill')
 var startTime = new Date().getTime();
 var Billers = [];
 Parser.parse = async function (sms) {
-    var res;
+    let resul = undefined;
     MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"), function (err, client) {
         var db = client.db("qykly_dev");
         assert.equal(null, err);
@@ -52,15 +52,15 @@ Parser.parse = async function (sms) {
                                 //     "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
                                 // }]
                                 smsList = [sms]
-                                const getData = async() => {
-                                    res = await processSms(smsList.filter(function (sms) {
-                                        return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
-                                    }), db, _.groupBy(templates, function (temp) {
-                                        return temp.address;
-                                    }), 0);
-                                    console.log(res,"in main func");
-                                }
-                                getData();
+                                
+                                processSms(smsList.filter(function (sms) {
+                                    return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
+                                }), db, _.groupBy(templates, function (temp) {
+                                    return temp.address;
+                                }), 0,function(result){
+                                    resul = result;
+                                    // console.log(resul);
+                                })
                                 
                             }
                         });
@@ -70,7 +70,8 @@ Parser.parse = async function (sms) {
         });
         // console.log("asdasdasdas")
     });
-    return res
+    // while(resul==undefined) console.log(resul);
+    return resul
 }
 
 function isNull(arg) {
@@ -164,7 +165,9 @@ var purchaseData = [];
 var totalTime = 0;
 var transactionCount = 1;
 var finMessage,finPattern;
-var processSms = async function (smsList, qyklyDb, templates, index) {
+
+
+var processSms = async function (smsList, qyklyDb, templates, index,call) {
     if (index == smsList.length) {
         var end = new Date().getTime();
         var time = end - startTime;
@@ -173,6 +176,10 @@ var processSms = async function (smsList, qyklyDb, templates, index) {
         console.log("total time ", totalTime);    //5822855458
         // console.log(finMessage,"   -----------------------------------------", finPattern);
         var result = {message: finMessage, pattern: finPattern};
+        if(call !=undefined)
+            call(result);
+        else
+            console.log("Nao chala");
         return result;
     }
 
@@ -383,7 +390,7 @@ var processSms = async function (smsList, qyklyDb, templates, index) {
                 console.log('Error while insertion');
             }
         }*/
-        processSms(smsList, qyklyDb, templates, ++index);
+        processSms(smsList, qyklyDb, templates, ++index, call);
         // console.log("----------",finMessage);
     });
     
