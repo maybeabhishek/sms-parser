@@ -25,11 +25,12 @@ UserBill = require('./userBill')
 var startTime = new Date().getTime();
 var Billers = [];
 Parser.parse = async function (sms) {
+    var res;
     MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"), function (err, client) {
         var db = client.db("qykly_dev");
         assert.equal(null, err);
         assert.ok(db != null);
-
+        
         db.collection('regexes').find({}).toArray(function (err, templates) {
             console.log(err);
             if (!err) {
@@ -51,13 +52,16 @@ Parser.parse = async function (sms) {
                                 //     "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
                                 // }]
                                 smsList = [sms]
-                                processSms(smsList.filter(function (sms) {
-                                    return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
-                                }), db, _.groupBy(templates, function (temp) {
-                                    return temp.address;
-                                }), 0)
-
-
+                                const getData = async() => {
+                                    res = await processSms(smsList.filter(function (sms) {
+                                        return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
+                                    }), db, _.groupBy(templates, function (temp) {
+                                        return temp.address;
+                                    }), 0);
+                                    console.log(res,"in main func");
+                                }
+                                getData();
+                                
                             }
                         });
                     }
@@ -66,7 +70,7 @@ Parser.parse = async function (sms) {
         });
         // console.log("asdasdasdas")
     });
-
+    return res
 }
 
 function isNull(arg) {
@@ -159,14 +163,17 @@ var count = 1;
 var purchaseData = [];
 var totalTime = 0;
 var transactionCount = 1;
-var processSms = function (smsList, qyklyDb, templates, index) {
+var finMessage,finPattern;
+var processSms = async function (smsList, qyklyDb, templates, index) {
     if (index == smsList.length) {
         var end = new Date().getTime();
         var time = end - startTime;
         totalTime += time;
         console.log("time taken ", time);   //19143504
         console.log("total time ", totalTime);    //5822855458
-        return
+        // console.log(finMessage,"   -----------------------------------------", finPattern);
+        var result = {message: finMessage, pattern: finPattern};
+        return result;
     }
 
 
@@ -176,7 +183,7 @@ var processSms = function (smsList, qyklyDb, templates, index) {
     var obj = {
         table: []
     };
-    qyklyDb.collection('sms').insert(message, function (err) {
+    qyklyDb.collection('sms').insert(message, async function (err) {
         // console.log(Object.keys(templates))
         var msgTemplates = templates[(message.sender + "").split('-').pop().toUpperCase()] || [];
 
@@ -189,8 +196,8 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                 // Pattern.compile(stringPattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNIX_LINES);
                 // var pattern = Pattern.compileSync(msgTemplate.pattern);
                 var matcher = pattern.exec(message.sender_message);
-
                 if (matcher != null) {
+                    finPattern = pattern;
                     if (msgTemplate.splittable && "bank".toUpperCase() == msgTemplate.accountType.toUpperCase() && "balance-notification".toUpperCase() == (msgTemplate.msgSubType.toUpperCase())) {
                         console.log(msgTemplate.splittable, " transaction splitable", transactionCount++)
                         const re1 = new RegExp((msgTemplate.split_pattern || "").replace('(?s)', ''));
@@ -204,10 +211,11 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                                 userTransaction.parsingTime = time;
                                 qyklyDb.collection('ProcessedData-user-transactions').insert(userTransaction);
                                 Parser.ProcessedDatausertransactions = userTransaction;
+                                finMessage = userTransaction
                             } catch (e) {
                                 qyklyDb.collection('unparsedSmsWithError').insert(message);
                                 Parser.unparsedSmsWithError = message;
-
+                                finMessage = message
                             }
                         }
                     } else {
@@ -224,6 +232,7 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                                     purchase.parsingTime = time;
                                     qyklyDb.collection('ProcessedData-purchases').insert(purchase);
                                     Parser.ProcessedDatapurchases = purchase;
+                                    finMessage = purchase;
                                     purchaseData.push(purchase);
                                 } catch (e) {
                                     console.log(e.stack);
@@ -234,6 +243,7 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                                     // processedSmsList.add(parsedSms);
                                     qyklyDb.collection('unparsedSmsWithError').insert(message);
                                     Parser.unparsedSmsWithError = message;
+                                    finMessage = message;
                                     continue;
                                 }
                                 break;
@@ -245,11 +255,13 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                                         if (travelTable != null) {
                                             qyklyDb.collection('ProcessedData-travel').insert(travelTable);
                                             Parser.ProcessedDatatravel = travelTable;
+                                            finMessage = travelTable;
                                         }
                                     } catch (e) {
                                         
                                         qyklyDb.collection('unparsedSmsWithError').insert(message);
                                         Parser.unparsedSmsWithError = message;
+                                        finMessage = message
                                         continue;
                                     }
                                 }
@@ -284,6 +296,7 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                                                         if (!err && !exists[0]) {
                                                             qyklyDb.collection('ProcessedData-user_bills').insert(userBill);
                                                             Parser.ProcessedDatauserbills = userBill;
+                                                            finMessage = userBill;
                                                         }
                                                     });
                                                 }
@@ -291,12 +304,13 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                                                 console.log(e.stack);
                                                 qyklyDb.collection('unparsedSmsWithError').insert(message);
                                                 Parser.unparsedSmsWithError = message;
+                                                finMessage = message;
                                             }
 
                                         } else if (!msgTemplate.splittable && transaction.msgSubType == ("balance-notification")) {
                                             qyklyDb.collection('ProcessedData-user-transactions').insert(transaction);
                                             Parser.ProcessedDatausertransactions = transaction;
-
+                                            finMessage = transaction;
                                         }
                                     }
 
@@ -310,6 +324,7 @@ var processSms = function (smsList, qyklyDb, templates, index) {
 
                                     qyklyDb.collection('unparsedSmsWithError').insert(message);
                                     Parser.unparsedSmsWithError = message;
+                                    finMessage = message;
                                 }
                                 break;
                             default:
@@ -321,10 +336,13 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                                     qyklyDb.collection('ProcessedData-user-transactions').insert(userTransaction);
                                     // console.log(userTransaction)
                                     Parser.ProcessedDatausertransactions = userTransaction;
+                                    finMessage = userTransaction;
+                                    // console.log(finMessage,"##############################################");
 
                                 } catch (e) {
                                     qyklyDb.collection('unparsedSmsWithError').insert(message);
                                     Parser.unparsedSmsWithError = message;
+                                    finMessage = message;
                                 }
                                 break;
                         }
@@ -332,6 +350,7 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                     message.isProcessed = 1;
                     qyklyDb.collection('parsedSms').insert(message);
                     Parser.parsedSms = message;
+                    
                     break;
                 }
             } catch (e) {
@@ -340,12 +359,13 @@ var processSms = function (smsList, qyklyDb, templates, index) {
                 console.log(message.sender_message);
                 continue;
             }
-
         }
+        
         if (message.isProcessed != 1) {
             console.log('unparsedSmsData');
             qyklyDb.collection('unparsedSmsData').insert(message);
             Parser.unparsedSms = message;
+            finMessage = message;
         }
 
         /*if (unparsedSmsData.length > 0) {
@@ -364,7 +384,9 @@ var processSms = function (smsList, qyklyDb, templates, index) {
             }
         }*/
         processSms(smsList, qyklyDb, templates, ++index);
+        // console.log("----------",finMessage);
     });
+    
 };
 
 

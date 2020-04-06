@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMS Parse</title>
     <link rel="stylesheet" type="text/css" href="dist/semantic.min.css">
-    
+
 </head>
 
 <body>
@@ -18,33 +18,49 @@
         <div class="ui padded raised segment">
             <div class="ui message padded" style="padding:15px; margin:2px">
                 <h4 class="ui dividing header blue">Message Details</h4>
-                <form class="ui small form"  action="/parse" method="post" style="padding:5px; margin:2px;">
+                <form class="ui small form" action="/parse" method="post" style="padding:5px; margin:2px;">
                     <div class="three fields">
 
                         <div class="three wide required field">
                             <label>Customer ID</label>
-                            <input type="text" name ="custID"  placeholder="Eg: 123456789" value="123456789">
+                            <input type="text" name="custID" placeholder="Eg: 123456789" value="123456789">
                         </div>
                         <div class="three wide required field">
                             <label>Sender</label>
-                            <input type="text"  name ="sender" placeholder="SBI or HDFC etc" value="">
+                            <input type="text" name="sender" placeholder="SBI or HDFC etc" value="">
                         </div>
                         <div class=" three wide required field">
                             <label>Date</label>
-                            <input type="text"  name ="date" placeholder="Variable Value" value="2020-01-02 14:26:09">
+                            <input type="text" name="date" placeholder="Variable Value" value="2020-01-02 14:26:09">
                         </div>
                     </div>
 
                     <div class="eight wide required field" style="padding:2px; margin:2px;width:600px">
                         <label>Message</label>
-                        <textarea rows="2" name ="message" ></textarea>
+                        <textarea rows="2" name="message"></textarea>
                     </div>
 
                     <div class="extra content" style="padding:4px">
-                        <button class="ui button black" id='AddVarStep' type ="submit">Parse</button>
+                        <button class="ui button black" id='AddVarStep' type="submit">Parse</button>
                     </div>
                 </form>
             </div>
+        </div>
+        <br><br>
+        <div class="ui grid">
+            <div class="eight wide column">
+                <div class="ui raised padded segment">
+                    <h1>Full json Object</h1>
+                    <div></div>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui raised padded segment">
+                    <h1>Regex Pattern</h1>
+                    <div></div>
+                </div>
+            </div>
+
         </div>
     </div>
 

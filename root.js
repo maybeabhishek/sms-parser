@@ -13,9 +13,10 @@ router.post("/parse", function(req, res){
         "sender_timestamp": req.body.date,
         "sender_message": req.body.message
       }
-    Parser.parse(sms)
-    setTimeout(function(){res.send(Parser)},2000);
+    Parser.parse(sms).then(r => console.log(r));
     
+    setTimeout(function(){res.send(Parser)},2000);
+    // console.log(r);
     // res.send("Complete")
 
 })  
