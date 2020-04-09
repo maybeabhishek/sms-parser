@@ -24,56 +24,54 @@ UserBill = require('./userBill')
 
 var startTime = new Date().getTime();
 var Billers = [];
-Parser.parse = async function (sms) {
-    let resul = undefined;
-    MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"), function (err, client) {
+
+Parser.parse = function (sms) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let client = await MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"));
         var db = client.db("qykly_dev");
-        assert.equal(null, err);
+        // assert.equal(null,);
         assert.ok(db != null);
-        
-        db.collection('regexes').find({}).toArray(function (err, templates) {
-            console.log(err);
-            if (!err) {
-                db.collection('billers').find({}).toArray(function (err, billers) {
-                    if (!err) {
-                        Billers = billers;
-                        console.log("billers ", Billers.length);
-                        db.collection('blacklisteds').find({}).toArray(function (err, blacklisteds) {
-                            if (!err) {
-                                console.log(blacklisteds.length);
-                                var blackLists = _.indexBy(blacklisteds, "Sender");
-
-                                var start = Date.now();
-                                var dirs = [];
-                                // smsList = [{
-                                //     "customer_id": 325170533,
-                                //     "sender": "BZ-SBIINB",
-                                //     "sender_timestamp": "2017-01-02 14:26:09",
-                                //     "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
-                                // }]
-                                smsList = [sms]
-                                
-                                processSms(smsList.filter(function (sms) {
-                                    return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
-                                }), db, _.groupBy(templates, function (temp) {
-                                    return temp.address;
-                                }), 0,function(result){
-                                    resul = result;
-                                    // console.log(resul);
-                                })
-                                
-                            }
-                        });
-                    }
-                });
-            }
+  
+        let templates = await db.collection('regexes').find({}).toArray();
+        console.log("Templates: " + templates.length);
+        let Billers = await db.collection('billers').find({}).toArray();
+  
+        console.log("billers ", Billers.length);
+        let blacklisteds = await db.collection('blacklisteds').find({}).toArray();
+        // if (!err) {
+        console.log('blist:' + blacklisteds.length);
+        var blackLists = _.indexBy(blacklisteds, "Sender");
+  
+        var start = Date.now();
+        var dirs = [];
+        // smsList = [{
+        //     "customer_id": 325170533,
+        //     "sender": "BZ-SBIINB",
+        //     "sender_timestamp": "2017-01-02 14:26:09",
+        //     "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
+        // }]
+        smsList = [sms]
+  
+        processSms(smsList.filter(function (sms) {
+          return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
+        }), db, _.groupBy(templates, function (temp) {
+          return temp.address;
+        }), 0, function(result){
+            console.log(result);
+            resolve(result);
         });
-        // console.log("asdasdasdas")
+  
+      }
+      catch (err) {
+        console.log(err);
+        reject(err);
+      }
     });
-    // while(resul==undefined) console.log(resul);
-    return resul
-}
-
+  
+  }
+  
+  
 function isNull(arg) {
     return !arg || arg == '';
 }
@@ -176,8 +174,10 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
         console.log("total time ", totalTime);    //5822855458
         // console.log(finMessage,"   -----------------------------------------", finPattern);
         var result = {message: finMessage, pattern: finPattern};
-        if(call !=undefined)
+        if(call !=undefined){
+            // console.log(result);
             call(result);
+        }
         else
             console.log("Nao chala");
         return result;
