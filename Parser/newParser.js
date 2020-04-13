@@ -58,7 +58,7 @@ Parser.parse = function (sms) {
         }), db, _.groupBy(templates, function (temp) {
           return temp.address;
         }), 0, function(result){
-            console.log(result);
+            // console.log(result);
             resolve(result);
         });
   
@@ -166,6 +166,7 @@ var finMessage,finPattern;
 
 
 var processSms = async function (smsList, qyklyDb, templates, index,call) {
+    finPattern = ""
     if (index == smsList.length) {
         var end = new Date().getTime();
         var time = end - startTime;
@@ -193,7 +194,7 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
     qyklyDb.collection('sms').insert(message, async function (err) {
         // console.log(Object.keys(templates))
         var msgTemplates = templates[(message.sender + "").split('-').pop().toUpperCase()] || [];
-
+        console.log("---------------------------------------------------------------",msgTemplates);
         var start = new Date().getTime();
 
         for (var i = 0; i < msgTemplates.length; i++) {

@@ -1,0 +1,40 @@
+{
+    "_id": {
+        "$oid": "5763e5f90005293d0c0022f2"
+    },
+    "posOutstanding": {
+        "$numberInt": "5"
+    },
+    "dateModified": "2016-05-12T17:09:30.183000",
+    "runawayCount": {
+        "$numberInt": "1"
+    },
+    "posAvailableLimit": {
+        "$numberInt": "4"
+    },
+    "merchantName": " ",
+    "bankName": "HDFC",
+    "pattern": "(?s)\\s*Thank\\s+you\\s+for\\s+using\\s+ur\\s+HDFCBank\\s+CREDIT\\s+Card\\s+ending\\s+([0-9]+)\\s+for\\s+Rs.([0-9,]+(?:\\.[0-9]+)?)\\s+towards\\s+ATM\\s+WDL\\s+on\\s+(.*).Avl\\s+bal\\s+-\\s+Rs.(-[0-9,]+(?:\\.[0-9]+)?),\\s+Curr\\s+o/s\\s+bal\\s+-\\s+Rs.([0-9,]+(?:\\.[0-9]+)?).*",
+    "posAmount": {
+        "$numberInt": "2"
+    },
+    "posDate": {
+        "$numberInt": "3"
+    },
+    "posMerchantAccountId": {
+        "$numberInt": "1"
+    },
+    "paymentType": "credit-card",
+    "msgType": "debit-transaction",
+    "txnType": "cash-withdrawal",
+    "accountType": "credit-card",
+    "address": "HDFCBK",
+    "msgSubType": "transfer-out",
+    "dateCreated": "2016-05-12T17:09:30.183000",
+    "posAccountId": {
+        "$numberInt": "1"
+    },
+    "id": "2c9f800348a7f30b0148f3c01f2160e9",
+    "dateLastReprocessed": "2016-05-12T17:09:30.183000",
+    "dateReprocessSet": "2016-05-12T17:09:30.183000"
+}

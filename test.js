@@ -1,5 +1,6 @@
 
-// const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require('mongodb').MongoClient;
+var _ = require('underscore');
 // const uri = "mongodb+srv://maybeabhishek:I_am_jok3r@cluster0-uoo2j.gcp.mongodb.net/qykly_dev?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true });
 // client.connect(err => {
@@ -27,8 +28,8 @@ var fs = require('fs');
 // }
 
 var uniqueMsgType = []
-for(var i = 0; i<json.length; i++){
-  if(!(json[i].msgType in uniqueMsgType)){
+for (var i = 0; i < json.length; i++) {
+  if (!(json[i].msgType in uniqueMsgType)) {
     uniqueMsgType[json[i].msgType] = 1
   }
 }
@@ -72,4 +73,93 @@ for(var i = 0; i<json.length; i++){
 //   };
 //   console.log("File has been created");
 // });
-console.log(json)
+
+
+// console.log(Object.keys(templates))
+
+
+var printMatchedPattern = function (message) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      
+      let client = await MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"));
+      var db = client.db("qykly_dev");
+
+      let templates = await db.collection('regexes').find({}).toArray();
+      console.log(templates.length);
+
+      temp = _.groupBy(templates, function (temp) {
+        return temp.address;
+      })
+      var msgTemplates = temp[(message.sender + "").split('-').pop().toUpperCase()] || [];
+      // console.log(msgTemplates);
+
+      for (var i = 0; i < msgTemplates.length; i++) {
+        try {
+          var msgTemplate = msgTemplates[i];
+          const pattern = new RegExp(msgTemplate.pattern.replace('(?s)', ''), 'gim');
+          // Pattern.compile(stringPattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNIX_LINES);
+          // var pattern = Pattern.compileSync(msgTemplate.pattern);
+          var matcher = pattern.exec(message.sender_message);
+          if (matcher != null)
+            console.log(matcher,msgTemplate);
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+      client.close();
+    }
+    catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  })
+};
+
+// message = {
+//   "customer_id": 325170533,
+//   "sender": "AD-HDFCBK",
+//   "sender_timestamp": "2017-01-02 14:26:09",
+//   "sender_message": "ALERT: You've spent Rs.2007.40  on CREDIT Card xx7498 at DIGITALOCEAN COM on 2019-10-01:10:27:20.Avl bal - Rs.247344.60, curr o/s - Rs.52655.40.Not you? Call 18002586161."
+// }
+
+message = {
+      "customer_id": 325170533,
+      "sender": "BZ-SBIINB",
+      "sender_timestamp": "2017-01-02 14:26:09",
+      "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
+  }
+printMatchedPattern(message);
+
+regexObj = {
+  pattern: "(?s)\s*ALERT:\s?You\'ve\s+spent\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+[CcRrEeDdiITt]+\s+[CaCArRdD]+\s+([xX0-9]+)\s+at\s+([a-zA-Z0-9.,-@\s]+)\s+on\s+(\d{4}-\d{2}-\d{2})(?::\d{2}:\d{2}:\d{2})\.[AvlaVL]+\s+[balanceBALANCE]+\s+-\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+),\s+curr\s+o\/s\s+-\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+).[NOTnot]+\s+you\?\s+Call\s+\d+.*\s?",
+  posOutstanding: 6,
+  dateModified: start,
+  runawayCount: 2,
+  posAvailableLimit: 5,
+  posMerchant: 3,
+  merchantName: "",
+  bankName: "HDFC",
+  posAmount: 1,
+  posDate: 4,
+  posMerchantAcountId: 2,
+  paymentType: "credit-card",
+  msgType: "debit-transaction",
+  txnType: "regular",
+  accountType: "credit-card",
+  address: "HDFCBK",
+  msgSubType: "expense",
+  dateCreated: start,
+  posAccountId: 2,
+  
+}
+
+
+// var start = new Date().getTime();
+
+
+//\s*ALERT:\s?You\'ve\s+spent\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+[CcRrEeDdiITt]+\s+[CaCArRdD]+\s+([xX0-9]+)\s+at\s+([a-zA-Z0-9.,-@\s]+)\s+on\s+(\d{4}-\d{2}-\d{2}:\d{2}:\d{2}:\d{2})\.[AvlaVL]+\s+[balanceBALANCE]+\s+-\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+),\s+curr\s+o\/s\s+-\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+).[NOTnot]+\s+you\?\s+Call\s+\d+.*\s?
+
+
+// \s*ALERT:\s*You\'ve\s+spent\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+[CcRrEeDdiITt]+\s+[CaCArRdD]+\s+([xX0-9]+)\s+at\s+([a-zA-Z0-9.-@\s]+)\s+on\s+(\d{4}-\d{2}-\d{2}:\d{2}:\d{2}:\d{2}).[NOTnot]+\s+you\?\s*Call\s+\d+.\s*

@@ -51,7 +51,24 @@
             <div class="eight wide column">
                 <div class="ui raised padded segment">
                     <h1>Full json Object</h1>
-                    <div><%=json.message%></div>
+                    <table class="ui selectable celled table dark">
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <% for(var x in json.message) {%>
+                            <tr>
+                                <td><%= x %> </td>
+                                <td><%= json.message[x] %></td>
+                            </tr>
+                        <% } %> 
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="eight wide column">
