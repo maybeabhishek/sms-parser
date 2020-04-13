@@ -81,7 +81,7 @@ for (var i = 0; i < json.length; i++) {
 var printMatchedPattern = function (message) {
   return new Promise(async (resolve, reject) => {
     try {
-      
+
       let client = await MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"));
       var db = client.db("qykly_dev");
 
@@ -100,9 +100,10 @@ var printMatchedPattern = function (message) {
           const pattern = new RegExp(msgTemplate.pattern.replace('(?s)', ''), 'gim');
           // Pattern.compile(stringPattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNIX_LINES);
           // var pattern = Pattern.compileSync(msgTemplate.pattern);
+          // console.log(pattern);
           var matcher = pattern.exec(message.sender_message);
           if (matcher != null)
-            console.log(matcher,msgTemplate);
+            console.log(matcher, msgTemplate);
         }
         catch (err) {
           console.log(err);
@@ -117,23 +118,25 @@ var printMatchedPattern = function (message) {
   })
 };
 
+message = {
+  "customer_id": 325170533,
+  "sender": "AD-HDFCBK",
+  "sender_timestamp": "2017-01-02 14:26:09",
+  "sender_message": "ALERT: You've spent Rs.2007.40  on CREDIT Card xx7498 at DIGITALOCEAN COM on 2019-10-01:10:27:20.Avl bal - Rs.247344.60, curr o/s - Rs.52655.40.Not you? Call 18002586161."
+}
+
 // message = {
 //   "customer_id": 325170533,
-//   "sender": "AD-HDFCBK",
+//   "sender": "BZ-SBIINB",
 //   "sender_timestamp": "2017-01-02 14:26:09",
-//   "sender_message": "ALERT: You've spent Rs.2007.40  on CREDIT Card xx7498 at DIGITALOCEAN COM on 2019-10-01:10:27:20.Avl bal - Rs.247344.60, curr o/s - Rs.52655.40.Not you? Call 18002586161."
+//   "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
 // }
-
-message = {
-      "customer_id": 325170533,
-      "sender": "BZ-SBIINB",
-      "sender_timestamp": "2017-01-02 14:26:09",
-      "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
-  }
 printMatchedPattern(message);
 
+var start = new Date().getTime();
+
 regexObj = {
-  pattern: "(?s)\s*ALERT:\s?You\'ve\s+spent\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+[CcRrEeDdiITt]+\s+[CaCArRdD]+\s+([xX0-9]+)\s+at\s+([a-zA-Z0-9.,-@\s]+)\s+on\s+(\d{4}-\d{2}-\d{2})(?::\d{2}:\d{2}:\d{2})\.[AvlaVL]+\s+[balanceBALANCE]+\s+-\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+),\s+curr\s+o\/s\s+-\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+).[NOTnot]+\s+you\?\s+Call\s+\d+.*\s?",
+  pattern: "(?s)\\s*ALERT:\\s?You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+[CcRrEeDdiITt]+\\s+[CaCArRdD]+\\s+([xX0-9]+)\\s+at\\s+([a-zA-Z0-9.,-@\\s]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2})\\.[AvlaVL]+\\s+[balanceBALANCE]+\\s+-\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+),\\s+curr\\s+o\\/s\\s+-\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).[NOTnot]+\\s+you\\?\\s+Call\\s+\\d+.*\\s?",
   posOutstanding: 6,
   dateModified: start,
   runawayCount: 2,
@@ -152,14 +155,34 @@ regexObj = {
   msgSubType: "expense",
   dateCreated: start,
   posAccountId: 2,
-  
+
 }
 
 
-// var start = new Date().getTime();
 
+var addNewRegex = function (regexObj) {
+  return new Promise(async (resolve, reject) => {
+    try {
 
-//\s*ALERT:\s?You\'ve\s+spent\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+[CcRrEeDdiITt]+\s+[CaCArRdD]+\s+([xX0-9]+)\s+at\s+([a-zA-Z0-9.,-@\s]+)\s+on\s+(\d{4}-\d{2}-\d{2}:\d{2}:\d{2}:\d{2})\.[AvlaVL]+\s+[balanceBALANCE]+\s+-\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+),\s+curr\s+o\/s\s+-\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+).[NOTnot]+\s+you\?\s+Call\s+\d+.*\s?
+      let client = await MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"));
+      var db = client.db("qykly_dev");
 
+      let templates = await db.collection('regexes').insertOne(regexObj);
+    }
+    catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+}
+// addNewRegex(regexObj);
+pattern = "(?s)\\s*ALERT:\\s?You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+[CcRrEeDdiITt]+\\s+[CaCArRdD]+\\s+([xX0-9]+)\\s+at\\s+([a-zA-Z0-9.,-@\\s]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2})\\.[AvlaVL]+\\s+[balanceBALANCE]+\\s+-\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+),\\s+curr\\s+o\\/s\\s+-\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).[NOTnot]+\\s+you\\?\\s+Call\\s+\\d+.*\\s?"
+
+// pattern = '(?s)\\s*Your\\s+a/c\\s+no\\.\\s+([xX0-9]+)\\s+is\\s+credited\\s+by\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-\\d{2}-\\d{2})\\s+by\\s+a/c\\s+linked\\s+to\\s+mobile\\s+([xX0-9]+)\\s+\\(IMPS\\s+Ref\\s+no\\s+([-0-9]+)\\).*';
 
 // \s*ALERT:\s*You\'ve\s+spent\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+[CcRrEeDdiITt]+\s+[CaCArRdD]+\s+([xX0-9]+)\s+at\s+([a-zA-Z0-9.-@\s]+)\s+on\s+(\d{4}-\d{2}-\d{2}:\d{2}:\d{2}:\d{2}).[NOTnot]+\s+you\?\s*Call\s+\d+.\s*
+
+const p = new RegExp(pattern.replace("(?s)",''), 'gim');
+console.log(p);
+var matcher = p.exec(message.sender_message);
+console.log(matcher);
