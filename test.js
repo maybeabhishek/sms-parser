@@ -122,7 +122,7 @@ message = {
   "customer_id": 325170533,
   "sender": "AD-HDFCBK",
   "sender_timestamp": "2017-01-02 14:26:09",
-  "sender_message": "ALERT: You've spent Rs.2007.40  on CREDIT Card xx7498 at DIGITALOCEAN COM on 2019-10-01:10:27:20.Avl bal - Rs.247344.60, curr o/s - Rs.52655.40.Not you? Call 18002586161."
+  "sender_message": "ALERT:Rs.5633.31 spent via CREDIT Card xx7498 at AMAZON1258399 on 2019-10-05:18:09:15 without PIN/OTP.Not you?Call 18002586161."
 }
 
 // message = {
@@ -131,16 +131,16 @@ message = {
 //   "sender_timestamp": "2017-01-02 14:26:09",
 //   "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
 // }
-printMatchedPattern(message);
+// printMatchedPattern(message);
 
 var start = new Date().getTime();
 
 regexObj = {
-  pattern: "(?s)\\s*ALERT:\\s?You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+[CcRrEeDdiITt]+\\s+[CaCArRdD]+\\s+([xX0-9]+)\\s+at\\s+([a-zA-Z0-9.,-@\\s]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2})\\.[AvlaVL]+\\s+[balanceBALANCE]+\\s+-\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+),\\s+curr\\s+o\\/s\\s+-\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).[NOTnot]+\\s+you\\?\\s+Call\\s+\\d+.*\\s?",
-  posOutstanding: 6,
-  dateModified: start,
+  pattern: "(?s)\\s*ALERT:\\s*You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+[CcRrEeDdiITt]+\\s+[CaCArRdD]+\\s+([xX0-9]+)\\s+at\\s+([a-zA-Z0-9.-@\\s]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2}).[NOTnot]+\\s+you\\?\\s*Call\\s+\\d+.\\s*",
+  posOutstanding: -1,
+  dateModified: start,  
   runawayCount: 2,
-  posAvailableLimit: 5,
+  posAvailableLimit: -1,
   posMerchant: 3,
   merchantName: "",
   bankName: "HDFC",
@@ -168,6 +168,7 @@ var addNewRegex = function (regexObj) {
       var db = client.db("qykly_dev");
 
       let templates = await db.collection('regexes').insertOne(regexObj);
+      client.close();
     }
     catch (err) {
       console.log(err);
@@ -179,10 +180,10 @@ var addNewRegex = function (regexObj) {
 
 
 // pattern = '(?s)\\s*Your\\s+a/c\\s+no\\.\\s+([xX0-9]+)\\s+is\\s+credited\\s+by\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-\\d{2}-\\d{2})\\s+by\\s+a/c\\s+linked\\s+to\\s+mobile\\s+([xX0-9]+)\\s+\\(IMPS\\s+Ref\\s+no\\s+([-0-9]+)\\).*';
+// pattern = "(?s)\\s*ALERT:\\s*You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+[CcRrEeDdiITt]+\\s+[CaCArRdD]+\\s+([xX0-9]+)\\s+at\\s+([a-zA-Z0-9.-@\\s]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2}).[NOTnot]+\\s+you\\?\\s*Call\\s+\\d+.\\s*"
 
-// \s*ALERT:\s*You\'ve\s+spent\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+[CcRrEeDdiITt]+\s+[CaCArRdD]+\s+([xX0-9]+)\s+at\s+([a-zA-Z0-9.-@\s]+)\s+on\s+(\d{4}-\d{2}-\d{2}:\d{2}:\d{2}:\d{2}).[NOTnot]+\s+you\?\s*Call\s+\d+.\s*
-
-const p = new RegExp(pattern.replace("(?s)",''), 'gim');
-console.log(p);
-var matcher = p.exec(message.sender_message);
-console.log(matcher);
+// pattern = "(?s)\\s*ALERT:(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+spent\\svia\\s+[CcRrEeDdiITt]+\\s+[CaCArRdD]+\\s+([xX0-9]+)\\s+at\\s+([a-zA-Z0-9.-@\\s]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2})\\s+without\\s+PIN\\/OTP\\.[NOTnot]+\\s+you\\?\\s*Call\\s+\\d+.\\s*"
+// const p = new RegExp(pattern.replace("(?s)",''), 'gim');
+// console.log(p);
+// var matcher = p.exec(message.sender_message);
+// console.log(matcher);

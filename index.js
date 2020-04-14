@@ -34,6 +34,6 @@ app.use(rootRoute);
 // =================
 // Server Configurations
 // =================
-app.listen(process.env.PORT || 4000, process.env.IP, function(){
+app.listen(process.env.PORT || 5000, process.env.IP, function(){
 	console.log("Server is running");
 }); 
