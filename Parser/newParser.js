@@ -162,11 +162,11 @@ var count = 1;
 var purchaseData = [];
 var totalTime = 0;
 var transactionCount = 1;
-var finMessage,finPattern;
+var finMessage,finPattern="";
 
 
 var processSms = async function (smsList, qyklyDb, templates, index,call) {
-    finPattern = ""
+    // finPattern = ""
     if (index == smsList.length) {
         var end = new Date().getTime();
         var time = end - startTime;
@@ -174,6 +174,7 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
         console.log("time taken ", time);   //19143504
         console.log("total time ", totalTime);    //5822855458
         // console.log(finMessage,"   -----------------------------------------", finPattern);
+        // console.log(finMessage);
         var result = {message: finMessage, pattern: finPattern};
         if(call !=undefined){
             // console.log(result);
@@ -194,7 +195,7 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
     qyklyDb.collection('sms').insert(message, async function (err) {
         // console.log(Object.keys(templates))
         var msgTemplates = templates[(message.sender + "").split('-').pop().toUpperCase()] || [];
-        console.log("---------------------------------------------------------------",msgTemplates);
+        // console.log("---------------------------------------------------------------",msgTemplates);
         var start = new Date().getTime();
 
         for (var i = 0; i < msgTemplates.length; i++) {
@@ -206,6 +207,7 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
                 var matcher = pattern.exec(message.sender_message);
                 if (matcher != null) {
                     finPattern = pattern;
+                    
                     if (msgTemplate.splittable && "bank".toUpperCase() == msgTemplate.accountType.toUpperCase() && "balance-notification".toUpperCase() == (msgTemplate.msgSubType.toUpperCase())) {
                         console.log(msgTemplate.splittable, " transaction splitable", transactionCount++)
                         const re1 = new RegExp((msgTemplate.split_pattern || "").replace('(?s)', ''));

@@ -3,7 +3,7 @@ const request = require('request');
 const Parser = require('./Parser/newParser')
 
 router.get("/", function (req, res) {
-	res.render("index.ejs",json={message: "", patter:""});
+	res.render("index.ejs",json={message: "", pattern:""});
 })
 
 router.post("/parse", function(req, res){
@@ -14,7 +14,7 @@ router.post("/parse", function(req, res){
         "sender_message": req.body.message
       }
     Parser.parse(sms).then(r =>  {
-      console.log(r.pattern);
+      // console.log(r.pattern);
       res.render("index.ejs",json=r);
     });
     

@@ -42,4 +42,27 @@ var regexObjs =[ {
     posAccountId: 2,
   
   },
+  {
+    pattern: "(?s)\\s*(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+was\\s+spent\\s+on\\s+your\\s+[CREDITcredit]*\\s+[CARDcard]*\\s+([xX0-9]+)\\s+on\\s+(\\d{2}-\\w{3,4}-\\d{2})\\s+at\\s+([a-zA-Z0-9.,-@\\s]+)\\.\\s+[AvblaBVL]+\\s+[LMTlmt]+\\:(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).\\s+Call\\s+\\d+.*\\s?",
+    posOutstanding: -1,
+    dateModified: start,  
+    runawayCount: 2,
+    posAvailableLimit: 5,
+    posMerchant: 4,
+    merchantName: "",
+    bankName: "AXIS",
+    posAmount: 1,
+    posDate: 3,
+    posMerchantAcountId: 2,
+    paymentType: "credit-card",
+    msgType: "debit-transaction",
+    txnType: "regular",
+    accountType: "credit-card",
+    address: "AXISBK",
+    msgSubType: "expense",
+    dateCreated: start,
+    posAccountId: 2,
+  
+  },
+  
 ]
