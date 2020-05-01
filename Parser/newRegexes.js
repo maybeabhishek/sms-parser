@@ -64,5 +64,29 @@ var regexObjs =[ {
     posAccountId: 2,
   
   },
+  {
+    dateModified: start,  
+    runawayCount: 2,
+    merchantName: "",
+    posTxnNote: -1,
+    bankName: "HDFC",
+    alternateDateFormat: "",
+    pattern: "\\s*UPDATE:\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+deposited\\s+in\\s+a\\/c\\s+([xX\\d]+)\\s+on\\s+(\\d{2}-\\w{3,4}-\\d{2})\\s+[\\w\\d\\-\\s@]+.\\s*Avl\\s+bal:(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)",
+    posAmount: 1,
+    posMerchant: -1,
+    paymentType: "debit-card",
+    splitPattern: "",
+    msgType: "debit-transaction",
+    txnType: "regular",
+    accountType: "debit-card",
+    address: "HDFCBK",
+    posAvailableLimit: 4,
+    msgSubType: "expense",
+    dateCreated: start,
+    posDate: 3,
+    posMerchantAcountId: 2,
+    posAccountId: 2,
+  
+  }
   
 ]
