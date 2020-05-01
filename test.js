@@ -122,7 +122,7 @@ message = {
   "customer_id": 325170533,
   "sender": "AD-HDFCBK",
   "sender_timestamp": "2017-01-02 14:26:09",
-  "sender_message": "ALERT:You've spent Rs.1000.00 via Debit Card xx3590 at ASHISH SERVICE on 2019-10-24:09:37:00.Avl Bal Rs.6124.69.Not you?Call 18002586161."
+  "sender_message": "UPDATE: Your A/c XX1800 credited with INR 1,350.00 on 04-10-19 by A/c linked to mobile no XX2753 (IMPS Ref No. 927719482073) Available bal: INR 4,108.99"
 }
 
 // message = {
@@ -165,27 +165,26 @@ console.log(start);
 // ===================Template for Debit Transaction on Debit Card================
 regexObj = {
   dateModified: start,  
-  runawayCount: 2,
+  runawayCount: 1,
   merchantName: "",
-  posTxnNote: 3,
+  posTxnNote: -1,
   bankName: "HDFC",
   alternateDateFormat: "",
-  pattern: "(?s)ALERT:You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+via\\s+Debit\\s+card\\s+([xX0-9]+)\\s+at\\s+([\\w\\s-\\\\\\.,]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2}).Avl\\s+Bal\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).[\\w\\d?\\s]*.",
-  posAmount: 1,
-  posMerchant: 3,
+  pattern: "(?s)UPDATE\\:\\s+[yY]our\\s+a\\/c\\s+([xX0-9]+)\\s+credited\\s+with\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}\\-\\d{2}\\-\\d{2})\\s+by\\s+a\\/c\\s+linked\\s+to\\s+mobile\\s+no\\s+[\\d\\w\\s\\(\\).]+\\s*Available\\s+bal:\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)",
+  posAmount: 2,
+  posMerchant: -1,
   paymentType: "debit-card",
   splitPattern: "",
   msgType: "debit-transaction",
   txnType: "regular",
   accountType: "debit-card",
   address: "HDFCBK",
-  posAvailableLimit: 5,
+  posAvailableLimit: 4,
   msgSubType: "expense",
   dateCreated: start,
-  posDate: 4,
-  posMerchantAcountId: 2,
-  posAccountId: 2,
-
+  posDate: 3,
+  posMerchantAcountId: 1,
+  posAccountId: 1,
 }
 
 
@@ -208,14 +207,17 @@ var addNewRegex = function (regexObj) {
 // addNewRegex(regexObj);
 
 
+// Regexes Added
+
 // pattern = '(?s)\\s*Your\\s+a/c\\s+no\\.\\s+([xX0-9]+)\\s+is\\s+credited\\s+by\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-\\d{2}-\\d{2})\\s+by\\s+a/c\\s+linked\\s+to\\s+mobile\\s+([xX0-9]+)\\s+\\(IMPS\\s+Ref\\s+no\\s+([-0-9]+)\\).*';
 // pattern = "(?s)\\s*ALERT:\\s*You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+[CcRrEeDdiITt]+\\s+[CaCArRdD]+\\s+([xX0-9]+)\\s+at\\s+([a-zA-Z0-9.-@\\s]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2}).[NOTnot]+\\s+you\\?\\s*Call\\s+\\d+.\\s*"
 // pattern = "(?s)\\s*(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+was\\s+spent\\s+on\\s+your\\s+[CREDITcredit]*\\s+[CARDcard]*\\s+([xX0-9]+)\\s+on\\s+(\\d{2}-\\w{3,4}-\\d{2})\\s+at\\s+([a-zA-Z0-9.,-@\\s]+)\\.\\s+[AvblaBVL]+\\s+[LMTlmt]+\\:(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).\\s+Call\\s+\\d+.*\\s?"
 // pattern = "\\s*UPDATE:\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+deposited\\s+in\\s+a\\/c\\s+([xX\\d]+)\\s+on\\s+(\\d{2}-\\w{3,4}-\\d{2})\\s+[\\w\\d\\-\\s@]+.\\s*Avl\\s+bal:(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)"
 // pattern = "\\s*UPDATE:\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+debited\\s+from\\s+a\\/c\\s+([xX\\d]+)\\s+on\\s+(\\d{2}-\\w{3,4}-\\d{2}).\\s+Info:\\s+[\\w\\d\\-\\s]+.\\s+Avl\\s+bal:(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)"
-
+// pattern = "(?s)ALERT:You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+via\\s+Debit\\s+card\\s+([xX0-9]+)\\s+at\\s+([\\w\\s-\\\\\\.,]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2}).Avl\\s+Bal\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).[\\w\\d?\\s]*."
 
 // Have to add reg objects
+
 // pattern = "(?s)\\s*Thanks\\s+for\\s+using\\s+HDFC\\s+Bank\\s+Visa\\s+FoodPlus\\s+Card\\s+Card\\s+([xX0-9]+)\\s+for\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+at\\s+([a-zA-Z0-9.,-@\\s]+)\\s?on\\s+(\\d{2}-\\w{3,4}-\\d{2}\\s+\\d{2}:\\d{2}\\s+[AMamPMpm]*)\\.\\s+Card\\s+Bal:\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\.\\s+Not\\s+[Yy]ou\\s+\\?\\s+Call\\s+\\d+.*\\s?"
 // Message: Thanks for using HDFC Bank Visa FoodPlus Card Card XXXX2164 for INR 350.28 at FUTURE RETAIL LTD on 02-OCT-19 09:10 PM. Card Bal: INR 5554.77. Not You ? Call 912261606161.
 
@@ -241,12 +243,8 @@ var addNewRegex = function (regexObj) {
 // pattern = "\s*[Yy]our\s+[Aa]\/c\s+([xX0-9]+)\s+has\s+a\s+debit\s+by\s+transfer\s+of\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+(\d{2}\/\d{2}\/\d{2}).\s+[Aa]vl\s+[Bb]al\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\.\s*"
 // message: Your A/C XXXXX326495 has a debit by transfer of Rs 500.00 on 03/10/19. Avl Bal Rs 3,419.77.
 
-// pattern = "UPDATE\:\s+[yY]our\s+a\/c\s+([xX0-9]+)\s+credited\s+with\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+(\d{2}\-\d{2}\-\d{2})\s+by\s+a\/c\s+linked\s+to\s+mobile\s+no\s+[\d\w\s\(\).]+\s*Available\s+bal:\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)"
+pattern = "(?s)UPDATE\\:\\s+[yY]our\\s+a\\/c\\s+([xX0-9]+)\\s+credited\\s+with\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}\\-\\d{2}\\-\\d{2})\\s+by\\s+a\\/c\\s+linked\\s+to\\s+mobile\\s+no\\s+[\\d\\w\\s\\(\\).]+\\s*Available\\s+bal:\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)"
 // message: UPDATE: Your A/c XX1800 credited with INR 1,350.00 on 04-10-19 by A/c linked to mobile no XX2753 (IMPS Ref No. 927719482073) Available bal: INR 4,108.99
-
-
-pattern = "(?s)ALERT:You\\'ve\\s+spent\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+via\\s+Debit\\s+card\\s+([xX0-9]+)\\s+at\\s+([\\w\\s-\\\\\\.,]+)\\s+on\\s+(\\d{4}-\\d{2}-\\d{2}:\\d{2}:\\d{2}:\\d{2}).Avl\\s+Bal\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).[\\w\\d?\\s]*."
-// message: ALERT:You've spent Rs.1000.00 via Debit Card xx3590 at ASHISH SERVICE on 2019-10-24:09:37:00.Avl Bal Rs.6124.69.Not you?Call 18002586161.
 
 
 
