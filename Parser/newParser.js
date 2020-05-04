@@ -22,56 +22,176 @@ TravelTable = require('./travelTable');
 UserBill = require('./userBill')
 
 
+
+//general regex objects
+var generalCreditMatch = {
+    _id: 1234,
+    bankName: "",
+    errorCode: 0,
+    splitPattern: "",
+    merchantName: "",
+    pattern: "(?s)credited[\\s\\w\\d]*(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)",
+    posAmount: 1,
+    msgType: "credit-transaction",
+    posBalance: -1,
+    accountType: "debit-card",
+    paymentType: "debit-card",
+    address: "",
+    msgSubType: "income",
+    runawayCount: 1,
+    alternateDateFormat: "",
+    txnType: "regular",
+    dateCreated: 1588490553504,
+    posDate: -1,
+    posAccountId: -1,
+    posMerchant: -1,
+}
+
+var generalDebitMatch = {
+    _id: 1234,
+    dateModified: 1588490553504,
+    runawayCount: 1,
+    merchantName: "",
+    posTxnNote: -1,
+    bankName: "",
+    alternateDateFormat: "",
+    pattern: "(?s)debited[\\s\\w\\d]*(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)",
+    posAmount: 1,
+    posMerchant: -1,
+    paymentType: "debit-card",
+    splitPattern: "",
+    msgType: "debit-transaction",
+    txnType: "regular",
+    accountType: "debit-card",
+    address: "",
+    posAvailableLimit: -1,
+    msgSubType: "expense",
+    dateCreated: 1588490553504,
+    posDate: -1,
+    posBalance: -1,
+    posMerchantAcountId: -1,
+    posAccountId: -1,
+}
+
+
+
 var startTime = new Date().getTime();
 var Billers = [];
 
-Parser.parse = function (sms) {
+
+Parser.addNewRegex = function (regexObj) {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            let client = await MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"));
+            var db = client.db("qykly_dev");
+
+            let templates = await db.collection('regexes').insertOne(regexObj);
+            return { message: "Success" };
+            client.close();
+        }
+        catch (err) {
+            console.log(err);
+            reject(err);
+            return { message: err };
+        }
+    });
+}
+
+Parser.getMatchedPattern = function (message) {
     return new Promise(async (resolve, reject) => {
       try {
-        let client = await MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"));
-        var db = client.db("qykly_dev");
-        // assert.equal(null,);
-        assert.ok(db != null);
-  
-        let templates = await db.collection('regexes').find({}).toArray();
-        console.log("Templates: " + templates.length);
-        let Billers = await db.collection('billers').find({}).toArray();
-  
-        console.log("billers ", Billers.length);
-        let blacklisteds = await db.collection('blacklisteds').find({}).toArray();
-        // if (!err) {
-        console.log('blist:' + blacklisteds.length);
-        var blackLists = _.indexBy(blacklisteds, "Sender");
-  
-        var start = Date.now();
-        var dirs = [];
-        // smsList = [{
-        //     "customer_id": 325170533,
-        //     "sender": "BZ-SBIINB",
-        //     "sender_timestamp": "2017-01-02 14:26:09",
-        //     "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
-        // }]
-        smsList = [sms]
-  
-        processSms(smsList.filter(function (sms) {
-          return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
-        }), db, _.groupBy(templates, function (temp) {
-          return temp.address;
-        }), 0, function(result){
-            // console.log(result);
-            resolve(result);
-        });
-  
+          let client = await MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"));
+          var db = client.db("qykly_dev");
+          
+          let templates = await db.collection('regexes').find({}).toArray();
+          console.log(templates.length);
+          
+          temp = _.groupBy(templates, function (temp) {
+              return temp.address;
+            })
+            var msgTemplates = temp[(message.sender + "").split('-').pop().toUpperCase()] || [];
+            // console.log(msgTemplates);
+            // console.log(message.sender_message)
+        // resolve("hi");
+        for (var i = 0; i < msgTemplates.length; i++) {
+          try {
+            var msgTemplate = msgTemplates[i];
+            const pattern = new RegExp(msgTemplate.pattern.replace('(?s)', ''), 'gim');
+            // Pattern.compile(stringPattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.UNIX_LINES);
+            // var pattern = Pattern.compileSync(msgTemplate.pattern);
+            // console.log(pattern);
+            var matcher = pattern.exec(message.sender_message);
+            // console.log(matcher);
+            if (matcher != null){
+              
+              resolve({matcher: matcher, msgTemplate: msgTemplate, message: "Success"});
+            }
+          }
+          catch (err) {
+            console.log(err);
+            // resolve( {message: err});
+          }
+        }
+        client.close();
+        resolve({message: "err" })
       }
       catch (err) {
         console.log(err);
         reject(err);
+        // return {message: err};
       }
+    })
+  };
+
+
+Parser.parse = function (sms) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let client = await MongoClient.connect((process.env.MONGO_URL || "mongodb://localhost:27017/"));
+            var db = client.db("qykly_dev");
+            // assert.equal(null,);
+            assert.ok(db != null);
+
+            let templates = await db.collection('regexes').find({}).toArray();
+            console.log("Templates: " + templates.length);
+            let Billers = await db.collection('billers').find({}).toArray();
+
+            console.log("billers ", Billers.length);
+            let blacklisteds = await db.collection('blacklisteds').find({}).toArray();
+            // if (!err) {
+            console.log('blist:' + blacklisteds.length);
+            var blackLists = _.indexBy(blacklisteds, "Sender");
+
+            var start = Date.now();
+            var dirs = [];
+            // smsList = [{
+            //     "customer_id": 325170533,
+            //     "sender": "BZ-SBIINB",
+            //     "sender_timestamp": "2017-01-02 14:26:09",
+            //     "sender_message": "Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659)."
+            // }]
+            smsList = [sms]
+
+            processSms(smsList.filter(function (sms) {
+                return !blackLists[(sms.sender + "").split('-').pop().toUpperCase()];
+            }), db, _.groupBy(templates, function (temp) {
+                return temp.address;
+            }), 0, function (result) {
+                // console.log(result);
+                resolve(result);
+            });
+
+        }
+        catch (err) {
+            console.log(err);
+            reject(err);
+        }
     });
-  
-  }
-  
-  
+
+}
+
+
 function isNull(arg) {
     return !arg || arg == '';
 }
@@ -162,10 +282,10 @@ var count = 1;
 var purchaseData = [];
 var totalTime = 0;
 var transactionCount = 1;
-var finMessage,finPattern="";
+var finMessage, finPattern = "";
 
 
-var processSms = async function (smsList, qyklyDb, templates, index,call) {
+var processSms = async function (smsList, qyklyDb, templates, index, call) {
     // finPattern = ""
     if (index == smsList.length) {
         var end = new Date().getTime();
@@ -175,8 +295,8 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
         console.log("total time ", totalTime);    //5822855458
         // console.log(finMessage,"   -----------------------------------------", finPattern);
         // console.log(finMessage);
-        var result = {message: finMessage, pattern: finPattern};
-        if(call !=undefined){
+        var result = { message: finMessage, pattern: finPattern };
+        if (call != undefined) {
             // console.log(result);
             call(result);
         }
@@ -207,7 +327,7 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
                 var matcher = pattern.exec(message.sender_message);
                 if (matcher != null) {
                     finPattern = pattern;
-                    
+
                     if (msgTemplate.splittable && "bank".toUpperCase() == msgTemplate.accountType.toUpperCase() && "balance-notification".toUpperCase() == (msgTemplate.msgSubType.toUpperCase())) {
                         console.log(msgTemplate.splittable, " transaction splitable", transactionCount++)
                         const re1 = new RegExp((msgTemplate.split_pattern || "").replace('(?s)', ''));
@@ -223,6 +343,7 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
                                 Parser.ProcessedDatausertransactions = userTransaction;
                                 finMessage = userTransaction
                             } catch (e) {
+
                                 qyklyDb.collection('unparsedSmsWithError').insert(message);
                                 Parser.unparsedSmsWithError = message;
                                 finMessage = message
@@ -268,14 +389,14 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
                                             finMessage = travelTable;
                                         }
                                     } catch (e) {
-                                        
+
                                         qyklyDb.collection('unparsedSmsWithError').insert(message);
                                         Parser.unparsedSmsWithError = message;
                                         finMessage = message
                                         continue;
                                     }
                                 }
-                                
+
                                 break;
                             case "bill":
                             case "service-notification":
@@ -360,7 +481,7 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
                     message.isProcessed = 1;
                     qyklyDb.collection('parsedSms').insert(message);
                     Parser.parsedSms = message;
-                    
+
                     break;
                 }
             } catch (e) {
@@ -370,12 +491,20 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
                 continue;
             }
         }
-        
+
         if (message.isProcessed != 1) {
-            console.log('unparsedSmsData');
-            qyklyDb.collection('unparsedSmsData').insert(message);
-            Parser.unparsedSms = message;
-            finMessage = message;
+            var userTransaction = checkGeneralCase(message);
+            if (userTransaction != null) {
+                finMessage = userTransaction;
+                console.log("Parsed with general case! Needs to be processed further.....");
+                qyklyDb.collection('canBeParsed').insert(userTransaction);
+            }
+            else {
+                console.log('unparsedSmsData');
+                qyklyDb.collection('unparsedSmsData').insert(message);
+                Parser.unparsedSms = message;
+                finMessage = message;
+            }
         }
 
         /*if (unparsedSmsData.length > 0) {
@@ -396,9 +525,25 @@ var processSms = async function (smsList, qyklyDb, templates, index,call) {
         processSms(smsList, qyklyDb, templates, ++index, call);
         // console.log("----------",finMessage);
     });
-    
+
 };
 
+
+var checkGeneralCase = function (message) {
+    const p1 = new RegExp(generalCreditMatch.pattern.replace("(?s)", ''), 'gim');
+    const p2 = new RegExp(generalDebitMatch.pattern.replace("(?s)", ''), 'gim');
+    var matcher1 = p1.exec(message.sender_message);
+    var matcher2 = p2.exec(message.sender_message);
+    if (matcher1 != null) {
+        var userTransaction = getUserTransaction(generalCreditMatch, matcher1, message);
+        return userTransaction;
+    }
+    else if (matcher2 != null) {
+        var userTransaction = getUserTransaction(generalDebitMatch, matcher2, message);
+        return userTransaction;
+    }
+    return null;
+}
 
 var getAccountId = function (accountId) {
     console.log("before format ", accountId);

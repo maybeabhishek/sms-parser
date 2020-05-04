@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <%- include ('partials/navbar') %>
     <div class="ui padded  container">
         <br><br><br>
         <div class="ui raised padded text container">
@@ -65,7 +66,7 @@
                                 <td><%= x %> </td>
                                 <td><%= json.message[x] %></td>
                             </tr>
-                        <% } %> 
+                            <% } %>
 
                         </tbody>
                     </table>
@@ -84,7 +85,12 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="dist/semantic.min.js"></script>
-
+    <script>
+        $(document).ready(function () {
+             $('#home').addClass("active");
+             $('#docs').removeClass("active");
+         })
+    </script>
 </body>
 
 </html>

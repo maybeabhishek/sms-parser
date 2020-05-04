@@ -1,0 +1,147 @@
+<h1 class="ui header">API Endpoints</h1>
+
+<div class="ui raised segment">
+    <h3 class="ui blue header">POST Request</h3>
+    <p>To get a parsed message outut you need to make a POST request to the following URL:</p>
+    <div class="ui big teal header"><i>localhost:8000/api/parse</i></div>
+    <br>
+
+    <div class="ui big blue header">
+        Query Parameters
+    </div>
+    <table class="ui very basic collapsing celled table">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h4 class="ui header">
+                        customer_id
+                    </h4>
+                </td>
+                <td>
+                    Integer
+                </td>
+                <td>
+                    A unique ID to identify a customer/ user whose message is being recieved. (optional)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="ui header">
+                        sender
+                    </h4>
+                </td>
+                <td>
+                    String
+                </td>
+                <td>
+                    SMS header that sent the message. For eg: "AD-HDFCBK"
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="ui header">
+                        sender_timestamp
+                    </h4>
+                </td>
+                <td>
+                    Date
+                </td>
+                <td>
+                    (optional) Timestamp when the message was recieved
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="ui header">
+                        sender_message
+                    </h4>
+                </td>
+                <td>
+                    String
+                </td>
+                <td>
+                    The message that needs to be parsed.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <div class="ui blue big header">Example Query</div>
+    <pre><code class="bash">
+        curl 
+        -X POST http://localhost:8000/api/parse 
+        -F "customer_id=325170533" 
+        -F "sender=AD-AxisBk" 
+        -F "sender_timestamp=2020-01-02 14:26:09" 
+        -F "sender_message=Your A/c 384674 is debited with Rs 1161.00 on 05-10-2019 13:54:40 at PUR/HINDUSTHAN HOTEL/HOOGHLY.Avbl Bal is Rs 71539.15.Call 18605005555 for dispute" 
+    </code></pre>
+    <div class="ui blue big header">Example Result</div>
+    <pre><code class="javascript">
+        { message:
+            { _id: 5eafad358daf214109f1cdd1,
+              accountNumber: 'xxxx4674',
+              accountType: 'debit-card',
+              address: 'AxisBk',
+              amount: 1161,
+              amountPaid: 0,
+              autoLinkedUserAccount: false,
+              availableLimit: '71539.15',
+              balance: 71539.15,
+              bankName: 'Axis',
+              billPaymentId: 0,
+              creditLimit: 0,
+              date: 2020-01-02T08:56:09.000Z,
+              dateCreated: '',
+              dateModified: '',
+              ignoreMsg: false,
+              latitude: 0,
+              longitude: 0,
+              markedForDelete: false,
+              merchantName: 'PUR/HINDUSTHAN HOTEL/HOOGHLY',
+              minAmountDue: 0,
+              minPurchaseAmount: 0,
+              msgId: '9e5bbb47-b42c-4954-8479-644b34a10d92',
+              smsSubType: '',
+              msgType: 'debit-transaction',
+              offerAmount: 0,
+              outstanding: 0,
+              patternId: undefined,
+              payable: false,
+              realtime: false,
+              reimbursable: false,
+              reimbursed: false,
+              smsId: '9e5bbb47-b42c-4954-8479-644b34a10d92',
+              smsText:
+               'Your A/c 384674 is debited with Rs 1161.00 on 05-10-2019 13:54:40 at PUR/HINDUSTHAN HOTEL/HOOGHLY.Avbl Bal is Rs 71539.15.Call 18605005555 for dispute',
+              synced: false,
+              systemLabel: 'personal',
+              totAmountDue: 0,
+              txnType: 'regular',
+              userCreated: false,
+              userId: '123456789',
+              userLabel: '',
+              uuid: '4c2b141f-3a15-430d-9dcc-d06c64d8b410',
+              vendor: 'unknown',
+              category: '',
+              billDate: 2020-05-04T05:50:45.995Z,
+              date_modified: 1588571445995,
+              date_created: 1588571445995,
+              saveTime: 1588571445995,
+              msgSubType: 'expense',
+              regexId: '5ead46f952bc2707196d39c3',
+              paymentType: 'debit-card',
+              parsingTime: 203 },
+           pattern:
+            /\s*[Yy]our\s+[Aa]\/c\s+([\d]+)\s+is\s+debited\s+with\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\s+on\s+(\d{2}-\d{2}-\d{4}\s\d{2}:\d{2}:\d{2})\s+at\s+([\w\/.*@\-\s]*)\.[Aa]vbl\s+[Bb]al\s+is\s+(?:Rs\.?|INR)(?:\s*)([0-9,]+(?:\.[0-9]+)?|\.[0-9]+)\.[Cc]all\s+\d*\s+for\s+dispute\s*/gim }
+    </code></pre>
+
+</div>

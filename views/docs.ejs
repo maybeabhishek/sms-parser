@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Parse</title>
+    <script src="/lib/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="dist/semantic.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.2/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.2/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+<body>
+    <%- include ('partials/navbar') %>
+    <div>
+        <div class="ui large inverted left fixed vertical menu">
+            <div class="item">
+                <img class="ui mini image" src="/images/logo.png" />
+            </div>
+            <a class="item" id="item1">POST /api/parse</a>
+            <a class="item" id="item2">POST /api/message/check</a>
+            <a class="item" id="item3">POST /api/add/regex</a>
+            <a class="item" id="item4">TODO</a>
+        </div>
+    </div>
+    <div class="ui container" id="user">
+        <%- include ('partials/api2') %>
+    </div>
+
+    <div class="ui container" id="stats">
+        <%- include ('partials/api1') %>
+    </div>
+
+    <div class="ui container" id="adduser">
+        <%- include ('partials/api3') %>
+    </div>
+    <div class="ui container" id="addship">
+        sjhdlshfkdf
+    </div>
+
+    <script>
+         $(document).ready(function () {
+             $('#docs').addClass("active");
+             $('#home').removeClass("active");
+         })
+        $(document).ready(function () {
+            $("#user").hide();
+            $("#adduser").hide();
+            $("#stats").show();
+            $("#addship").hide();
+            $("#item1").toggleClass("active");
+        })
+        $("#item1").on("click", function () {
+            $("#user").hide();
+            $("#adduser").hide();
+            $("#stats").show();
+            $("#addship").hide();
+            $("#item2").removeClass("active");
+            $("#item1").addClass("active");
+            $("#item3").removeClass("active");
+            $("#item4").removeClass("active");
+        });
+        $("#item2").on("click", function () {
+            $("#stats").hide();
+            $("#adduser").hide();
+            $("#user").show();
+            $("#addship").hide();
+            $("#item1").removeClass("active");
+            $("#item2").addClass("active");
+            $("#item3").removeClass("active");
+            $("#item4").removeClass("active");
+        });
+        $("#item3").on("click", function () {
+            $("#user").hide();
+            $("#stats").hide();
+            $("#adduser").show();
+            $("#addship").hide();
+            $("#item1").removeClass("active");
+            $("#item3").addClass("active");
+            $("#item2").removeClass("active");
+            $("#item4").removeClass("active");
+        });
+        $("#item4").on("click", function () {
+            $("#user").hide();
+            $("#stats").hide();
+            $("#adduser").hide();
+            $("#addship").show();
+            $("#item1").removeClass("active");
+            $("#item4").addClass("active");
+            $("#item2").removeClass("active");
+            $("#item3").removeClass("active");
+        });
+    </script>
+    <script src="dist/semantic.min.js"></script>
+</body>
+
+</html>

@@ -14,7 +14,7 @@ router.post("/parse", function(req, res){
         "sender_message": req.body.message
       }
     Parser.parse(sms).then(r =>  {
-      // console.log(r.pattern);
+      console.log(r);
       res.render("index.ejs",json=r);
     });
     
@@ -22,6 +22,48 @@ router.post("/parse", function(req, res){
     // console.log(r);
     // res.send("Complete")
 
-})  
+})
+
+router.post("/api/parse", function(req, res){
+  var sms = {
+      "customer_id": req.query.custID,
+      "sender": req.query.sender,
+      "sender_timestamp": req.query.date,
+      "sender_message": req.query.message
+    }
+  Parser.parse(sms).then(r =>  {
+    // console.log(r);
+    res.send(r);
+  });
+  
+  // setTimeout(function(){res.send(Parser)},2000);
+  // console.log(r);
+  // res.send("Complete")
+
+})
+
+router.post("/api/add/regex", function(req, res){
+  // Parser.addNewRegex(regex);
+  res.send("TODO");
+})
+
+router.post("/api/message/check", function(req, res){
+  var sms = {
+    "customer_id": req.query.custID,
+    "sender": req.query.sender,
+    "sender_timestamp": req.query.date,
+    "sender_message": req.query.message
+  }
+  // console.log(sms);
+  
+  Parser.getMatchedPattern(sms).then(r=>{
+    res.send(r);
+  })
+})
+
+
+router.get("/docs", function(req, res){
+  res.render("docs.ejs");
+});
 
 module.exports = router;

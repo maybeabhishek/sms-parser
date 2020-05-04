@@ -1,0 +1,127 @@
+<h1 class="ui header">API Endpoints</h1>
+
+<div class="ui raised segment">
+    <h3 class="ui blue header">POST Request</h3>
+    <p>To check if a message is getting parsed or not you need to make a POST request to the following URL:</p>
+    <div class="ui big teal header"><i>localhost:8000/api/message/check</i></div>
+    <br>
+
+    <div class="ui big blue header">
+        Query Parameters
+    </div>
+    <table class="ui very basic collapsing celled table">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <h4 class="ui header">
+                        customer_id
+                    </h4>
+                </td>
+                <td>
+                    Integer
+                </td>
+                <td>
+                    A unique ID to identify a customer/ user whose message is being recieved. (optional)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="ui header">
+                        sender
+                    </h4>
+                </td>
+                <td>
+                    String
+                </td>
+                <td>
+                    SMS header that sent the message. For eg: "AD-HDFCBK"
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="ui header">
+                        sender_timestamp
+                    </h4>
+                </td>
+                <td>
+                    Date
+                </td>
+                <td>
+                    (optional) Timestamp when the message was recieved
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="ui header">
+                        sender_message
+                    </h4>
+                </td>
+                <td>
+                    String
+                </td>
+                <td>
+                    The message that needs to be parsed.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <div class="ui blue big header">Example Query</div>
+    <pre><code class="bash">
+        curl 
+        -X POST http://localhost:8000/api/message/check 
+        -F "customer_id=325170533" 
+        -F "sender=AD-AxisBk" 
+        -F "sender_timestamp=2020-01-02 14:26:09" 
+        -F "sender_message=Your A/c 384674 is debited with Rs 1161.00 on 05-10-2019 13:54:40 at PUR/HINDUSTHAN HOTEL/HOOGHLY.Avbl Bal is Rs 71539.15.Call 18605005555 for dispute" 
+    </code></pre>
+
+    <div class="ui blue big header">Example Result</div>
+    <pre><code class="javascript">
+        { matcher:
+            [ 'Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659).',
+              'XXXXXXXX0791',
+              '10.00',
+              '21-12-16',
+              '8XXXXXX000',
+              '635621846659',
+              index: 0,
+              input: 'Your a/c no. XXXXXXXX0791 is credited by Rs.10.00 on 21-12-16 by a/c linked to mobile 8XXXXXX000 (IMPS Ref no 635621846659).',
+              groups: undefined ],
+           msgTemplate:
+            { _id: 5865028358962f0681a51808,
+              bankName: 'SBI',
+              regexDate: 1483014787408,
+              splitPattern: '',
+              posTxnNote: 5,
+              id: '2c9f8d4150a356260150ae2083566832',
+              merchantName: '',
+              dateFormat: 'dd-MM-yy',
+              pattern:
+               '(?s)\\s*Your\\s+a/c\\s+no\\.\\s+([xX0-9]+)\\s+is\\s+credited\\s+by\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-\\d{2}-\\d{2})\\s+by\\s+a/c\\s+linked\\s+to\\s+mobile\\s+([xX0-9]+)\\s+\\(IMPS\\s+Ref\\s+no\\s+([-0-9]+)\\).*',
+              posAmount: 2,
+              msgType: 'credit-transaction',
+              dateModified: 2016-12-29T12:33:07.408Z,
+              dateLastTxn: 1483013341000,
+              dateCreated: 2016-12-29T12:33:07.408Z,
+              paymentType: 'imps',
+              accountType: 'bank',
+              address: 'SBIINB',
+              msgSubType: 'income',
+              posDate: 3,
+              processingWeight: 200,
+              posSenderAccountId: 4,
+              txnType: 'regular',
+              posAccountId: 1 },
+           message: 'Success' }
+    </code></pre>
+</div>
