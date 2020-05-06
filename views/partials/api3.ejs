@@ -1,0 +1,100 @@
+<h1 class="ui header">API Endpoints</h1>
+
+<div class="ui raised segment">
+    <h3 class="ui blue header">POST Request</h3>
+    <p>To check if a message is getting parsed or not you need to make a POST request to the following URL:</p>
+    <div class="ui big black header"><i>localhost:8000/api/add/regex</i></div>
+    
+
+    <div class="ui big blue header">
+        Query Parameters
+    </div>
+    <p>
+        The API is still under construction but function <strong>Parser.addNewRegex(regexObj)</strong> can be used to insert a new regex object to the existing bunch.
+    </p>
+    <p>A few regex object syntaxes are given below. They can be used as reference to create new regex objects.</p>
+
+    <h4 class="ui blue header">Template for Credit Transaction on Debit Card</h4>
+    <pre>
+        <code>
+            regexObj = {
+                bankName: "HDFC",  // The name of the bank
+                errorCode: 0,   // Error Codes for identification (optional)
+                splitPattern: "",  // If additional split patterns are required for splitting in regex (default : "")
+                merchantName: "",  // Name of Merchant in the SMS
+                pattern: "(?s)\\s*(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+debited\\s+from\\s+a\\/c\\s+([\\*\\d]+)\\s+on\\s+(\\d{2}-\\d{2}-\\d{2})\\s+to\\s+VPA\\s+([\\w\\.\\-\\@\\d]+)\\(UPI\\s+Ref\\s+No\\s+([0-9]+)\\).\\s+[Nn]ot\\s+[Yy]ou\\?\\s+Call\\s+on\\s+\\d+\\s+to\\s+report\\s*",
+                    // The pattern/regex  IT IS IMPORTANT TO KNOW THAT EVERY '\' HAS TO BE REPLACED 
+                    // BY '\\' AND PREFIXED BY '(?s)' FOR REGEX TO WORK IN THE LOGIC
+                posAmount: 1,  // Index position of Amount deducted or credited
+                msgType: "credit-transaction",  // Msg type. All different message types can be queried from database or check Regex folder for more info.
+                posBalance: -1, // Index of Balance in Account in the Regex.  -1 represents NA (Not Available)
+                accountType: "debit-card",   //  Account type 
+                paymentType: "debit-card",  // Self explanatory
+                address: "HDFCBK",   // Header of Message i.e. The sender id of the entitiy sending the message.
+                                    // NOTE: It is important to note that for SMS header "AD-hdfcBK" we use 
+                                    // HDFCBK as address. Always consider the part after '-' and uppercase everything
+                dateModified: start,  // start represents a variable of type Date
+                msgSubType: "income",  // a subtype of message. Can be customized based on needs
+                runawayCount: 1,  //optional
+                alternateDateFormat: "",   // If alternative date format is to be used (optional)
+                txnType: "regular",  // type of Taxation involved (regular, installment, EMI, etc)
+                dateCreated: start,  // represents a Date object
+                posDate: 3,   // Date position in the formed regex
+                posAccountId: 2,  // Position of Account ID in the Regex
+                posMerchant: 4,  // Position of Merchant in the Regex
+              }              
+        </code>
+    </pre>
+    <h4 class="ui blue header">Template for Debit Transaction on Debit Card</h4>
+    <pre><code>
+        regexObj = {
+            dateModified: start,  
+            runawayCount: 1,
+            merchantName: "",
+            posTxnNote: 4,
+            bankName: "ICICI",
+            alternateDateFormat: "",
+            pattern: "(?s)\\s*Txn\\s+of\\s+(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+done\\s+on\\s+Acct\\s+([xX0-9]+)\\s+on\\s+(\\d{2}-\\w{3,4}-\\d{2}).Info\\:\\s+([\\w\\*\\s\\-\\/\\,\\d]+).Avbl Bal:(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).Call[\\s\\d\\w]",
+            posAmount: 1,
+            posMerchant: 4,
+            paymentType: "debit-card",
+            splitPattern: "",
+            msgType: "debit-transaction",
+            txnType: "regular",
+            accountType: "debit-card",
+            address: "ICICIB",
+            posAvailableLimit: 5,
+            msgSubType: "expense",
+            dateCreated: start,
+            posDate: 3,
+            posBalance: 5,
+            posMerchantAcountId: 2,
+            posAccountId: 2,
+          }
+    </code></pre>
+    <h4 class="ui blue header">Template for Debit Transaction with Credit Card</h4>
+    <pre><code>
+        regexObj = {
+            pattern: "(?s)\\s*(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+was\\s+spent\\s+on\\s+your\\s+[CREDITcredit]*\\s+[CARDcard]*\\s+([xX0-9]+)\\s+on\\s+(\\d{2}-\\w{3,4}-\\d{2})\\s+at\\s+([a-zA-Z0-9.,-@\\s]+)\\.\\s+[AvblaBVL]+\\s+[LMTlmt]+\\:(?:Rs\\.?|INR)(?:\\s*)([0-9,]+(?:\\.[0-9]+)?|\\.[0-9]+).\\s+Call\\s+\\d+.*\\s?",
+            posOutstanding: -1,
+            dateModified: start,  
+            runawayCount: 2,
+            posAvailableLimit: 5,
+            posMerchant: 4,
+            merchantName: "",
+            bankName: "AXIS",
+            posAmount: 1,
+            posDate: 3,
+            posMerchantAcountId: 2,
+            paymentType: "credit-card",
+            msgType: "debit-transaction",
+            txnType: "regular",
+            accountType: "credit-card",
+            address: "AXISBK",
+            msgSubType: "expense",
+            dateCreated: start,
+            posAccountId: 2,
+          
+          }
+    </code></pre>
+</div>

@@ -14,17 +14,15 @@
 
 <body>
     <%- include ('partials/navbar') %>
-    <div>
-        <div class="ui large inverted left fixed vertical menu">
-            <div class="item">
-                <img class="ui mini image" src="/images/logo.png" />
-            </div>
+    <div class="ui container">
+        <div class="ui blue four item menu">
             <a class="item" id="item1">POST /api/parse</a>
             <a class="item" id="item2">POST /api/message/check</a>
             <a class="item" id="item3">POST /api/add/regex</a>
             <a class="item" id="item4">TODO</a>
         </div>
     </div>
+    <br>
     <div class="ui container" id="user">
         <%- include ('partials/api2') %>
     </div>
