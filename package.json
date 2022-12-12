@@ -19,7 +19,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "ejs": "^3.0.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "gulp": "^3.9.1",
     "highlight.js": "^10.0.2",
     "moment": "^2.24.0",
